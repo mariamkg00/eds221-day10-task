@@ -1,0 +1,57 @@
+---
+title: "Madison Lake Visualization"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+
+```
+
+```{r}
+madison_meteoroligical <- read_csv("ntl20_v6.csv")
+madison_lake_ice <- read_csv("ntl33_v7.csv")
+```
+
+```{r}
+#Replacing -999 with NA
+madison_lake_ice[madison_lake_ice == -999]<- NA
+
+```
+
+```{r}
+#visualizing the comparison of ice duration across different lakes in the Madison Lake area 
+
+
+ggplot(data = madison_lake_ice , aes(x = lakeid , y = ice_duration),
+       color = "blue")+
+  geom_boxplot()+
+  xlab("Lake ID in Madison, WI")+
+  ylab("Ice Duration (days)")
+  
+
+```
+
+```{r}
+#Finding the mean ice cover duration in Madison Lake area by year:
+
+madison_mean <- madison_lake_ice %>% 
+  group_by(year4) %>% 
+  rename(year = year4) %>% 
+  summarize(mean_ice_cover_duration = mean(ice_duration, na.rm = TRUE))
+```
+
+```{r}
+#| fig-cap: "The average ice duration in Madison Lakes shares a generally negative relationship with time."
+ggplot(data = madison_mean , aes(x = year , y = mean_ice_cover_duration,
+                                 color = mean_ice_cover_duration ))+
+  geom_point()+
+  geom_smooth()+
+  scale_color_gradient(low = "blue" , high = "red")+
+  xlab("Year")+
+  ylab("Average Ice Cover Duration in days")
+  
+  
+```
